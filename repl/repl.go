@@ -3,6 +3,7 @@ package repl
 import (
 	"bufio"
 	"fmt"
+	"go_interpreter/evaluator"
 	"go_interpreter/lexer"
 	"go_interpreter/parser"
 	"io"
@@ -10,7 +11,7 @@ import (
 
 /*
 the REPL reads input, sends it to the interpreter for evaluation, prints the result/output of the
-interpreter and starts again. Read, Parse, Print, Loop.
+interpreter and starts again. Read, Evaluate, Print, Loop.
 */
 
 const PROMPT = ">> "
@@ -35,8 +36,11 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		io.WriteString(out, program.String())
-		io.WriteString(out, "\n")
+		evaluated := evaluator.Eval(program)
+		if evaluated != nil {
+			io.WriteString(out, evaluated.Inspect())
+			io.WriteString(out, "\n")
+		}
 
 	}
 }
