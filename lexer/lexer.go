@@ -5,10 +5,10 @@ import "go_interpreter/token"
 // supports ASCII characters
 // TODO: support Unicode
 type Lexer struct {
-	input string
-	position int 	 // current position in input (points to current char)
-	readPosition int // current reading position in input (after current char)
-	ch byte 		 // current char under examination
+	input        string
+	position     int  // current position in input (points to current char)
+	readPosition int  // current reading position in input (after current char)
+	ch           byte // current char under examination
 }
 
 func New(input string) *Lexer {
@@ -27,7 +27,7 @@ func (l *Lexer) readChar() {
 	l.readPosition += 1
 }
 
-func(l *Lexer) NextToken() token.Token {
+func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
 	l.skipWhitespace()
@@ -76,6 +76,15 @@ func(l *Lexer) NextToken() token.Token {
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
+	case '"':
+		tok.Type = token.STRING
+		tok.Literal = l.readString()
+	case '[':
+		tok = newToken(token.LBRACKET, l.ch)
+	case ']':
+		tok = newToken(token.RBRACKET, l.ch)
+	case ':':
+		tok = newToken(token.COLON, l.ch)
 	default:
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()
@@ -136,4 +145,18 @@ func (l *Lexer) peekChar() byte {
 	} else {
 		return l.input[l.readPosition]
 	}
+}
+
+// TODO:
+// 1.add suport for character escaping, such as string literals like "hello \"world\"", "hello\n world" and "hello\t\t\tworld"
+// 2. make readString report an error instead of simply returning when it reaches the end of the input
+func (l *Lexer) readString() string {
+	position := l.position + 1
+	for {
+		l.readChar()
+		if l.ch == '"' || l.ch == 0 {
+			break
+		}
+	}
+	return l.input[position:l.position]
 }

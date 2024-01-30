@@ -5,22 +5,31 @@ import (
 
 	"go_interpreter/token"
 )
+
 func TestNextToken(t *testing.T) {
 	input := `let five = 5;
 	let ten = 10;
+
 	let add = fn(x, y) {
 	x + y;
 	};
+
 	let result = add(five, ten);
 	!-/*5;
 	5 < 10 > 5;
+
 	if (5 < 10) {
-	return true;
+		return true;
 	} else {
-	return false;
+		return false;
 	}
+
 	10 == 10;
 	10 != 9;
+	"foobar"
+	"foo bar"
+	[1, 2];
+	{"foo": "bar"}
 	`
 
 	tests := []struct {
@@ -100,6 +109,19 @@ func TestNextToken(t *testing.T) {
 		{token.NOT_EQ, "!="},
 		{token.INT, "9"},
 		{token.SEMICOLON, ";"},
+		{token.STRING, "foobar"},
+		{token.STRING, "foo bar"},
+		{token.LBRACKET, "["},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "2"},
+		{token.RBRACKET, "]"},
+		{token.SEMICOLON, ";"},
+		{token.LBRACE, "{"},
+		{token.STRING, "foo"},
+		{token.COLON, ":"},
+		{token.STRING, "bar"},
+		{token.RBRACE, "}"},
 		{token.EOF, ""},
 	}
 
