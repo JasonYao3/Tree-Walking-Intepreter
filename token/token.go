@@ -15,6 +15,7 @@ var keywords = map[string]TokenType{
 	"if":     IF,
 	"else":   ELSE,
 	"return": RETURN,
+	"macro":  MACRO,
 }
 
 const (
@@ -53,6 +54,7 @@ const (
 	ELSE     = "ELSE"
 	RETURN   = "RETURN"
 	STRING   = "STRING"
+	MACRO    = "MACRO"
 )
 
 // return the correct Token Type for the token literal
