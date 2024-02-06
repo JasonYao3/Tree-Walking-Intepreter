@@ -8,10 +8,12 @@ import (
 	"strconv"
 )
 
+// The Parser repeatedly advances the tokens and checks the current token to decide what to do next:
+// either call another parsing function or throw an error.
 type Parser struct {
 	l *lexer.Lexer
 
-	curToken  token.Token
+	curToken  token.Token // points to the current token under examination
 	peekToken token.Token
 
 	errors []string
@@ -91,15 +93,19 @@ func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 }
 
+// advances both p.curToken and p.peekToken
 func (p *Parser) nextToken() {
 	p.curToken = p.peekToken
 	p.peekToken = p.l.NextToken()
 }
 
+// ParseProgram constructs the AST root node by iterating through input tokens
+// until token.EOF. It appends parsed statements to the AST's Statements field.
 func (p *Parser) ParseProgram() *ast.Program {
-	program := &ast.Program{}
+	program := &ast.Program{} // construct the root node of the AST
 	program.Statements = []ast.Statement{}
 
+	// iterates over every token in the input until it encounters an token.EOF token, by repeatedly calling nextToken().
 	for !p.curTokenIs(token.EOF) {
 		stmt := p.parseStatement()
 		if stmt != nil {
@@ -111,6 +117,8 @@ func (p *Parser) ParseProgram() *ast.Program {
 	return program
 }
 
+// parseStatement switches between LET, RETURN, and default cases
+// to parse a statement based on the current token type.
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.LET:
@@ -122,8 +130,13 @@ func (p *Parser) parseStatement() ast.Statement {
 	}
 }
 
+// parseLetStatement constructs an AST node for a LET statement.
+// Expects an identifier after LET, sets it as the Name, and
+// parses the expression as the Value. Consumes a SEMICOLON if present.
 func (p *Parser) parseLetStatement() *ast.LetStatement {
-	stmt := &ast.LetStatement{Token: p.curToken}
+	stmt := &ast.LetStatement{
+		Token: p.curToken,
+	} // constructs an *ast.LetStatement node with the current token
 
 	if !p.expectPeek(token.IDENT) {
 		return nil
@@ -484,6 +497,7 @@ func (p *Parser) peekTokenIs(t token.TokenType) bool {
 	return p.peekToken.Type == t
 }
 
+// expectPeek is an assertion function that enforces the correctness of the order of tokens by checking the type of the next token.
 func (p *Parser) expectPeek(t token.TokenType) bool {
 	if p.peekTokenIs(t) {
 		p.nextToken()
@@ -510,6 +524,7 @@ func (p *Parser) curPrecedence() int {
 	return LOWEST
 }
 
+// Errors returns the errors
 func (p *Parser) Errors() []string {
 	return p.errors
 }
@@ -519,6 +534,7 @@ func (p *Parser) noPrefixParseFnError(t token.TokenType) {
 	p.errors = append(p.errors, msg)
 }
 
+// peekError add an error to errors when the type of peekToken doesn't match the expectation.
 func (p *Parser) peekError(t token.TokenType) {
 	msg := fmt.Sprintf("expected next token to be %s, got %s instead",
 		t, p.peekToken.Type)

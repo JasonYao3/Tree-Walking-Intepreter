@@ -66,6 +66,8 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	return true
 }
 
+// checkParserErrors checks the parsers for errors and
+// if it has any it prints them as test errors and stop the execution of the current test.
 func checkParserErrors(t *testing.T, p *Parser) {
 	errors := p.Errors()
 

@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+// Every node in the AST has to implement the Node interface
+// The AST consists solely of Nodes that are connected to each other - a tree.
 type Node interface {
 	TokenLiteral() string
 	String() string
@@ -21,6 +23,9 @@ type Expression interface {
 	expressionNode()
 }
 
+// The root node of every AST produced by the parser.
+// Every valid program is a series of statements.
+// These statements are contained in the Program.Statements, which is just a slice of AST nodes that implement the Statement interface.
 type Program struct {
 	Statements []Statement
 }
@@ -44,11 +49,14 @@ func (p *Program) String() string {
 
 type LetStatement struct {
 	Token token.Token // the token.LET token
-	Name  *Identifier
-	Value Expression
+	Name  *Identifier // holds the identifier of the binding
+	Value Expression // holds the expression that procduces the value
 }
 
-func (ls *LetStatement) statementNode()       {}
+// type LetStatement implements the Statement interface
+func (ls *LetStatement) statementNode() {}
+
+// type LetStatement implements the Node interface
 func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
 func (ls *LetStatement) String() string {
 	var out bytes.Buffer
@@ -65,6 +73,15 @@ func (ls *LetStatement) String() string {
 
 	return out.String()
 }
+
+type Identifier struct {
+	Token token.Token // the token.IDENT token
+	Value string
+}
+
+func (i *Identifier) expressionNode()      {}
+func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
+func (i *Identifier) String() string       { return i.Value }
 
 type ReturnStatement struct {
 	Token       token.Token // the 'return' token
@@ -100,15 +117,6 @@ func (es *ExpressionStatement) String() string {
 	}
 	return ""
 }
-
-type Identifier struct {
-	Token token.Token // the token.IDENT token
-	Value string
-}
-
-func (i *Identifier) expressionNode()      {}
-func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
-func (i *Identifier) String() string       { return i.Value }
 
 type IntegerLiteral struct {
 	Token token.Token
