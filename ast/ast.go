@@ -50,7 +50,7 @@ func (p *Program) String() string {
 type LetStatement struct {
 	Token token.Token // the token.LET token
 	Name  *Identifier // holds the identifier of the binding
-	Value Expression // holds the expression that procduces the value
+	Value Expression  // holds the expression that procduces the value
 }
 
 // type LetStatement implements the Statement interface
