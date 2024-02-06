@@ -17,6 +17,7 @@ interpreter and starts again. Read, Evaluate, Print, Loop.
 
 const PROMPT = ">> "
 
+// TODO: Initialize the lexer with an io.Reader and the filename.
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 	env := object.NewEnvironment()

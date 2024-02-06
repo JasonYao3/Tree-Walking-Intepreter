@@ -7,6 +7,7 @@ type Token struct {
 	Literal string
 }
 
+// stores language keywords.
 var keywords = map[string]TokenType{
 	"fn":     FUNCTION,
 	"let":    LET,
@@ -18,6 +19,7 @@ var keywords = map[string]TokenType{
 	"macro":  MACRO,
 }
 
+// user-defined identifiers
 const (
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"
@@ -57,7 +59,9 @@ const (
 	MACRO    = "MACRO"
 )
 
-// return the correct Token Type for the token literal
+// it checks whether the given identifier is a keyword
+// if it is, it returns the keyword's TokenType constant,
+// otherwise it returns token.IDENT, which is the TokenType for all user-defined identifiers.
 func LookupIdent(ident string) TokenType {
 	if tok, ok := keywords[ident]; ok {
 		return tok
