@@ -159,6 +159,9 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 	return stmt
 }
 
+// parseReturnStatement constructs an AST node for a RETURN statement.
+// Initializes a ReturnStatement with the current token, parses the
+// ReturnValue expression, and consumes SEMICOLON tokens if present.
 func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: p.curToken}
 
