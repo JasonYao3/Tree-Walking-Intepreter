@@ -18,15 +18,20 @@ type Parser struct {
 
 	errors []string
 
+	// to check if the prefix or infix map has a parsing function associated with curToken.Type.
 	prefixParseFns map[token.TokenType]prefixParseFn
 	infixParseFns  map[token.TokenType]infixParseFn
 }
 
+// Each token type can have up to two parsing functions associated with it, 
+// depending on whether the token is found in a prefix or an infix position.
 type (
 	prefixParseFn func() ast.Expression               // token type in prefix position
-	infixParseFn  func(ast.Expression) ast.Expression // token type in infix position
+	infixParseFn  func(ast.Expression) ast.Expression // token type in infix position. The ast.Expression argument is the "left side" of the infix operator.
 )
 
+// iota gives the following constants incrementing numbers as values.
+// _ takes the zero value
 const (
 	_ int = iota
 	LOWEST
@@ -58,9 +63,10 @@ func New(l *lexer.Lexer) *Parser {
 	// Read two tokens, so curToken and peekToken are both set
 	p.nextToken()
 	p.nextToken()
-
+	
+	// Initialize the prefixParseFns map on Parser to register a parsing function
 	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
-	p.registerPrefix(token.IDENT, p.parseIdentifier)
+	p.registerPrefix(token.IDENT, p.parseIdentifier) // if token type of token.IDENT is encountered the parseIdentifier parsing function will be called
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
@@ -89,6 +95,7 @@ func New(l *lexer.Lexer) *Parser {
 	return p
 }
 
+// parseIdentifier returns an *ast.Identifier with the current token and its literal value.
 func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 }
@@ -176,10 +183,14 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	return stmt
 }
 
+// parseExpressionStatement constructs an AST node for an expression statement.
+// Initializes an ExpressionStatement with the current token, parses the expression
+// as the Expression field, and consumes a SEMICOLON token if present.
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	// defer untrace(trace("parseExpressionStatement"))
 	stmt := &ast.ExpressionStatement{Token: p.curToken}
 
+	// pass the lowest precedence to parseExpression, since we didn't parse anything yet and we can't compare precedences.
 	stmt.Expression = p.parseExpression(LOWEST)
 
 	if p.peekTokenIs(token.SEMICOLON) {
@@ -189,6 +200,9 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	return stmt
 }
 
+// parseExpression constructs an expression node using prefix and infix parsing functions.
+// Parses until a SEMICOLON or a lower-precedence token is encountered. 
+// Returns the constructed expression node.
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	// defer untrace(trace("parseExpression"))
 	prefix := p.prefixParseFns[p.curToken.Type]
@@ -537,17 +551,19 @@ func (p *Parser) noPrefixParseFnError(t token.TokenType) {
 	p.errors = append(p.errors, msg)
 }
 
-// peekError add an error to errors when the type of peekToken doesn't match the expectation.
+// peekError adds an error to errors when the type of peekToken doesn't match the expectation.
 func (p *Parser) peekError(t token.TokenType) {
 	msg := fmt.Sprintf("expected next token to be %s, got %s instead",
 		t, p.peekToken.Type)
 	p.errors = append(p.errors, msg)
 }
 
+// registerPrefix is a helper function that adds prefixes to the prefixParseFns map
 func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
 	p.prefixParseFns[tokenType] = fn
 }
 
+// registerInfix is a helper function that adds infixes to the infixParseFns map
 func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 	p.infixParseFns[tokenType] = fn
 }
