@@ -38,6 +38,8 @@ func (p *Program) TokenLiteral() string {
 	}
 }
 
+// String creates a buffer and writes the return value of each statements String() method to it
+// Then it returns the buffer as a string.
 func (p *Program) String() string {
 	var out bytes.Buffer
 
