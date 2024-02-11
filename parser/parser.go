@@ -23,7 +23,7 @@ type Parser struct {
 	infixParseFns  map[token.TokenType]infixParseFn
 }
 
-// Each token type can have up to two parsing functions associated with it, 
+// Each token type can have up to two parsing functions associated with it,
 // depending on whether the token is found in a prefix or an infix position.
 type (
 	prefixParseFn func() ast.Expression               // token type in prefix position
@@ -44,6 +44,7 @@ const (
 	INDEX       // array[index]
 )
 
+// precedences table that associates token types with their precedence.
 var precedences = map[token.TokenType]int{
 	token.EQ:       EQUALS,
 	token.NOT_EQ:   EQUALS,
@@ -63,10 +64,11 @@ func New(l *lexer.Lexer) *Parser {
 	// Read two tokens, so curToken and peekToken are both set
 	p.nextToken()
 	p.nextToken()
-	
+
 	// Initialize the prefixParseFns map on Parser to register a parsing function
 	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
-	p.registerPrefix(token.IDENT, p.parseIdentifier) // if token type of token.IDENT is encountered the parseIdentifier parsing function will be called
+	// if token type of token.IDENT is encountered the parseIdentifier parsing function will be called.
+	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
@@ -109,10 +111,10 @@ func (p *Parser) nextToken() {
 // ParseProgram constructs the AST root node by iterating through input tokens
 // until token.EOF. It appends parsed statements to the AST's Statements field.
 func (p *Parser) ParseProgram() *ast.Program {
-	program := &ast.Program{} // construct the root node of the AST
+	program := &ast.Program{} // constructs the root node of the AST
 	program.Statements = []ast.Statement{}
 
-	// iterates over every token in the input until it encounters an token.EOF token, by repeatedly calling nextToken().
+	// Iterates over every token in the input until it encounters an token.EOF token, by repeatedly calling nextToken().
 	for !p.curTokenIs(token.EOF) {
 		stmt := p.parseStatement()
 		if stmt != nil {
@@ -190,7 +192,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	// defer untrace(trace("parseExpressionStatement"))
 	stmt := &ast.ExpressionStatement{Token: p.curToken}
 
-	// pass the lowest precedence to parseExpression, since we didn't parse anything yet and we can't compare precedences.
+	// Pass the lowest precedence to parseExpression, since we didn't parse anything yet and we can't compare precedences.
 	stmt.Expression = p.parseExpression(LOWEST)
 
 	if p.peekTokenIs(token.SEMICOLON) {
@@ -200,8 +202,10 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	return stmt
 }
 
-// parseExpression constructs an expression node using prefix and infix parsing functions.
-// Parses until a SEMICOLON or a lower-precedence token is encountered. 
+// parseExpression constructs an AST node for an expression.
+// It uses prefix and infix parsing functions based on token types.
+// Parses expressions until a SEMICOLON token is encountered or the
+// precedence of the next token is lower than the current precedence.
 // Returns the constructed expression node.
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	// defer untrace(trace("parseExpression"))
@@ -226,6 +230,9 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	return leftExp
 }
 
+// parsePrefixExpression constructs a prefix expression node.
+// Initializes with the current token and operator, advances to
+// the next token, and parses the right expression. Returns the node.
 func (p *Parser) parsePrefixExpression() ast.Expression {
 	// defer untrace(trace("parsePrefixExpression"))
 	expression := &ast.PrefixExpression{
@@ -240,6 +247,11 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 	return expression
 }
 
+
+// parseInfixExpression constructs an infix expression node.
+// Initializes with the current token, operator, and a left expression.
+// Advances to the next token, determines precedence, and parses the right expression.
+// Returns the node representing the infix expression.
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	// defer untrace(trace("parseInfixExpression"))
 	expression := &ast.InfixExpression{
@@ -255,11 +267,16 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	return expression
 }
 
+// parseIntegerLiteral constructs an AST node for an integer literal expression.
+// Initializes IntegerLiteral with the current token, parses the integer value,
+// and returns the node. Appends an error message to the parser's errors if parsing fails.
 func (p *Parser) parseIntegerLiteral() ast.Expression {
 	// defer untrace(trace("parseIntegerLiteral"))
 	lit := &ast.IntegerLiteral{Token: p.curToken}
 
+	// converts the string in p.curToken.Literal into an int64
 	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
+
 	if err != nil {
 		msg := fmt.Sprintf("could not parse %q as integer", p.curToken.Literal)
 		p.errors = append(p.errors, msg)
@@ -525,6 +542,7 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 	}
 }
 
+// peekPrecedence returns the precedence associated with the token type of p.peekToken, or it defaults to LOWEST.
 func (p *Parser) peekPrecedence() int {
 	if p, ok := precedences[p.peekToken.Type]; ok {
 		return p
@@ -533,6 +551,7 @@ func (p *Parser) peekPrecedence() int {
 	return LOWEST
 }
 
+// curPrecedence returns the precedence associated with the token type of p.curToken, , or it defaults to LOWEST.
 func (p *Parser) curPrecedence() int {
 	if p, ok := precedences[p.curToken.Type]; ok {
 		return p
@@ -541,11 +560,12 @@ func (p *Parser) curPrecedence() int {
 	return LOWEST
 }
 
-// Errors returns the errors
+// Errors returns the errors.
 func (p *Parser) Errors() []string {
 	return p.errors
 }
 
+// noPrefixParseFnError adds a formatted error message to the parser's errors field.
 func (p *Parser) noPrefixParseFnError(t token.TokenType) {
 	msg := fmt.Sprintf("no prefix parse function for %s found", t)
 	p.errors = append(p.errors, msg)
