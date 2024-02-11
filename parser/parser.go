@@ -247,7 +247,6 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 	return expression
 }
 
-
 // parseInfixExpression constructs an infix expression node.
 // Initializes with the current token, operator, and a left expression.
 // Advances to the next token, determines precedence, and parses the right expression.

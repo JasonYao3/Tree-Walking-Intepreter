@@ -49,6 +49,7 @@ func (p *Program) String() string {
 	return out.String()
 }
 
+// *ast.LetStatement node
 type LetStatement struct {
 	Token token.Token // the token.LET token
 	Name  *Identifier // holds the identifier of the binding
@@ -76,6 +77,7 @@ func (ls *LetStatement) String() string {
 	return out.String()
 }
 
+// *ast.Identifier node
 type Identifier struct {
 	Token token.Token // the token.IDENT token
 	Value string
@@ -85,6 +87,7 @@ func (i *Identifier) expressionNode()      {}
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
 func (i *Identifier) String() string       { return i.Value }
 
+// *ast.ReturnStatement node
 type ReturnStatement struct {
 	Token       token.Token // the 'return' token
 	ReturnValue Expression
@@ -106,6 +109,7 @@ func (rs *ReturnStatement) String() string {
 	return out.String()
 }
 
+// *ast.ExpressionStatement node
 type ExpressionStatement struct {
 	Token      token.Token // the frist token of the expression
 	Expression Expression
@@ -120,6 +124,7 @@ func (es *ExpressionStatement) String() string {
 	return ""
 }
 
+// *ast.IntegerLiteral node
 type IntegerLiteral struct {
 	Token token.Token
 	Value int64
@@ -129,10 +134,11 @@ func (il *IntegerLiteral) expressionNode()      {}
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 func (il *IntegerLiteral) String() string       { return il.Token.Literal }
 
+// *ast.PrefixExpression node
 type PrefixExpression struct {
 	Token    token.Token // The prefix token, e.g. !
-	Operator string
-	Right    Expression
+	Operator string      // is a string that's going to comtain either "-" or "!"
+	Right    Expression  // contains the expression to the right of the operator
 }
 
 func (pe *PrefixExpression) expressionNode()      {}
@@ -146,6 +152,7 @@ func (pe *PrefixExpression) String() string {
 	return out.String()
 }
 
+// *ast.InfixExpression node
 type InfixExpression struct {
 	Token    token.Token // The operator token, e.g. +
 	Left     Expression
@@ -166,6 +173,7 @@ func (oe *InfixExpression) String() string {
 	return out.String()
 }
 
+// *ast.Boolean node
 type Boolean struct {
 	Token token.Token
 	Value bool
@@ -175,6 +183,7 @@ func (b *Boolean) expressionNode()      {}
 func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
 func (b *Boolean) String() string       { return b.Token.Literal }
 
+// *ast.IfExpression node
 type IfExpression struct {
 	Token       token.Token // The 'if' token
 	Condition   Expression
@@ -200,6 +209,7 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
+// *ast.BlockStatement node
 type BlockStatement struct {
 	Token      token.Token
 	Statements []Statement
@@ -217,6 +227,7 @@ func (bs *BlockStatement) String() string {
 	return out.String()
 }
 
+// *ast.FunctionLiteral node
 type FunctionLiteral struct {
 	Token      token.Token // The 'fn' token
 	Parameters []*Identifier
@@ -242,6 +253,7 @@ func (fl *FunctionLiteral) String() string {
 	return out.String()
 }
 
+// *ast.CallExpression node
 type CallExpression struct {
 	Token     token.Token // The '(' token
 	Function  Expression  // Identifier or FunctionLiteral
@@ -266,6 +278,7 @@ func (ce *CallExpression) String() string {
 	return out.String()
 }
 
+// *ast.StringLiteral node
 type StringLiteral struct {
 	Token token.Token
 	Value string
@@ -275,6 +288,7 @@ func (sl *StringLiteral) expressionNode()      {}
 func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
 func (sl *StringLiteral) String() string       { return sl.Token.Literal }
 
+// *ast.ArrayLiteral node
 type ArrayLiteral struct {
 	Token    token.Token // the '[' token
 	Elements []Expression
@@ -297,6 +311,7 @@ func (al *ArrayLiteral) String() string {
 	return out.String()
 }
 
+// *ast.IndexExpression node
 type IndexExpression struct {
 	Token token.Token // The [ token
 	Left  Expression
@@ -317,6 +332,7 @@ func (ie *IndexExpression) String() string {
 	return out.String()
 }
 
+// *ast.HashLiteral node
 type HashLiteral struct {
 	Token token.Token // the '{' token
 	Pairs map[Expression]Expression
@@ -339,6 +355,7 @@ func (hl *HashLiteral) String() string {
 	return out.String()
 }
 
+// *ast.MacroLiteral node
 type MacroLiteral struct {
 	Token      token.Token // The 'macro' token
 	Parameters []*Identifier
