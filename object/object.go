@@ -8,6 +8,9 @@ import (
 	"strings"
 )
 
+// Represent every value encountered during the evaluation of the source code as an Object, an interface.
+// Wrap each value inside a struct that fulfills this Object interface.
+
 type ObjectType string
 
 type Object interface {

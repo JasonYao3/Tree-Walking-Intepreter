@@ -12,6 +12,9 @@ var (
 	FALSE = &object.Boolean{Value: false}
 )
 
+// Eval takes the input, pass it to the lexer, pass the lexer to the parser and get back an AST.
+// And then, this is new, we pass the AST to Eval.
+// The return value of Eval is what we use to make assertions.
 func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 
