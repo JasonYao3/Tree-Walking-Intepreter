@@ -1,6 +1,6 @@
 # Interpreter in Go
 
-Currently extending the programming language designed in [_Writing An Interpreter In Go_](https://interpreterbook.com) and [_Writing a Compiler in Go_](https://compilerbook.com) by [Thorsten Ball](https://github.com/mrnugget).
+Currently extending the programming language designed in [_Writing An Interpreter In Go_](https://interpreterbook.com) by [Thorsten Ball](https://github.com/mrnugget).
 
 ## It Supports:
 
