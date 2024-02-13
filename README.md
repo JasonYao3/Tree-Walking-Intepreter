@@ -4,19 +4,19 @@ This repository contains the C like Programming Language implementation. The lex
 
 Currently extending the programming language designed in [_Writing An Interpreter In Go_](https://interpreterbook.com) by [Thorsten Ball](https://github.com/mrnugget).
 
-## It Supports the following list of features:
+## It supports the following list of features:
 
-• integers
-• booleans
-• strings
-• arrays
-• hashes
-• prefix-, infix- and index operators
-• conditionals
-• global and local bindings
-• first-class functions
-• return statements
-• closures
+- integers
+- booleans
+- strings
+- arrays
+- hashes
+- prefix-, infix- and index operators
+- conditionals
+- global and local bindings
+- first-class functions
+- return statements
+- closures
 
 ### Let Statements
 
