@@ -1,6 +1,4 @@
-# Interpreter in Go
-
-A Tree-Walking Intepreter
+# Tree-Walking Intepreter in Go
 
 This repository contains the C like Programming Language implementation. The lexer in the lexer package converts REPL input into tokens, and a Pratt parser in the parser package transforms these tokens into an Abstract Syntax Tree (AST). The evaluator, located in the evaluator package, uses the Eval function to recursively traverse the AST and produce values. The result is printed to the REPL.
 
