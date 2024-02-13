@@ -1,8 +1,24 @@
 # Interpreter in Go
 
+A Tree-Walking Intepreter
+
+This repository contains the C like Programming Language implementation. The lexer in the lexer package converts REPL input into tokens, and a Pratt parser in the parser package transforms these tokens into an Abstract Syntax Tree (AST). The evaluator, located in the evaluator package, uses the Eval function to traverse the AST and produce values.
+
 Currently extending the programming language designed in [_Writing An Interpreter In Go_](https://interpreterbook.com) by [Thorsten Ball](https://github.com/mrnugget).
 
-## It Supports:
+## It Supports the following list of features:
+
+• integers
+• booleans
+• strings
+• arrays
+• hashes
+• prefix-, infix- and index operators
+• conditionals
+• global and local bindings
+• first-class functions
+• return statements
+• closures
 
 ### Let Statements
 
