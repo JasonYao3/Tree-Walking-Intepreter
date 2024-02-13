@@ -4,7 +4,7 @@ Currently extending the programming language designed in [_Writing An Interprete
 
 ## It supports:
 
-## Let Statements
+### Let Statements
 
 You can define identifiers with using the `let` keyword.
 
