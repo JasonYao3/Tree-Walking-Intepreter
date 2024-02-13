@@ -2,7 +2,7 @@
 
 Currently extending the programming language designed in [_Writing An Interpreter In Go_](https://interpreterbook.com) and [_Writing a Compiler in Go_](https://compilerbook.com) by [Thorsten Ball](https://github.com/mrnugget).
 
-## It supports:
+## It Supports:
 
 ### Let Statements
 
@@ -70,4 +70,28 @@ false
 20
 >> -5 * (2 + 5)
 -35
+```
+
+### Array Literals
+
+```sh
+>> let myArray = ["Jason", "Yao", 27, fn(x) {x + x}];
+>> myArray[0]
+Jason
+>> myArray[2]
+27
+>> myArray[3](2);
+4
+```
+
+### Hash Literals
+
+```sh
+>> let myHash = {"name": "Jason", "age": 18, "language": "Go"};
+>> myHash["name"]
+Jason
+>> myHash["age"]
+18
+>> myHash["language"]
+Go
 ```
