@@ -13,6 +13,7 @@ type Opcode byte
 const (
 	OpConstant Opcode = iota // iota generates increasing byte values.
 	OpAdd
+	OpPop
 )
 
 type Definition struct {
@@ -26,6 +27,7 @@ var definitions = map[Opcode]*Definition{
 		[]int{2},
 	}, // operand is only two bytes wide, which makes it an uint16 and limits its maximum value to 65536 (including 0).
 	OpAdd: {"OpAdd", []int{}},
+	OpPop: {"OpPop", []int{}},
 }
 
 func Lookup(op byte) (*Definition, error) {
