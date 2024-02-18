@@ -1,6 +1,7 @@
 package compiler
 
 import (
+	"fmt"
 	"go_interpreter/ast"
 	"go_interpreter/code"
 	"go_interpreter/object"
@@ -45,6 +46,13 @@ func (c *Compiler) Compile(node ast.Node) error {
 			return err
 		}
 
+		switch node.Operator {
+		case "+":
+			c.emit(code.OpAdd)
+		default:
+			return fmt.Errorf("unknown operator %s", node.Operator)
+		}
+
 	case *ast.IntegerLiteral:
 		integer := &object.Integer{Value: node.Value}
 		c.emit(code.OpConstant, c.addConstant(integer))
@@ -66,11 +74,14 @@ type Bytecode struct {
 	Constants    []object.Object   // compiler evalutes it
 }
 
+// addConstant returns the constant object index in the constants slice.
 func (c *Compiler) addConstant(obj object.Object) int {
 	c.constants = append(c.constants, obj)
 	return len(c.constants) - 1
 }
 
+// emit generates an instruction and add it to the results, by adding it to a collection in memory
+// returns the starting position of the just-emitted instruction
 func (c *Compiler) emit(op code.Opcode, operands ...int) int {
 	ins := code.Make(op, operands...)
 	pos := c.addInstruction(ins)
